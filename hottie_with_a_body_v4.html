@@ -738,7 +738,10 @@ function renderHomeScreen(){
       <div class="home-next-label">Recommended for today · ${blockName(next.vol)}</div>
       <div class="home-next-muscles">${ms.map(m=>'<span class="home-muscle-tag">'+m+'</span>').join('')}</div>
       <div class="home-next-meta">${why}</div>
-      <button class="home-start-btn" onclick="openWWithHomePips('${wk(next)}')">START WORKOUT →</button>
+      <div style="display:flex;gap:8px;margin-top:2px">
+        <button class="home-start-btn" style="flex:1" onclick="openWWithHomePips('${wk(next)}')">START →</button>
+        <button class="home-start-btn" style="flex:0 0 auto;background:var(--sf2);color:var(--tx);border:1.5px solid var(--bd);font-size:13px;padding:15px 14px" onclick="homeScheduleSheet('${wk(next)}')">📅 Schedule</button>
+      </div>
     </div>`;
   } else {
     h+='<div class="home-next-card"><div class="home-next-label">All done 🏆</div><div class="home-next-day" style="font-size:26px">Every workout complete</div></div>';
@@ -819,7 +822,6 @@ function showSessionSetup(w){
     <div class="pip-block">
       ${pip('time','⏱','Time available','1=30 min · 3=60 min · 5=90+ min',ex.time)}
       ${pip('busy','🏋️','Gym busyness','1=empty · 3=moderate · 5=packed',ex.busy)}
-      ${pip('energy','⚡','Energy level','1=low · 3=normal · 5=crushing it',ex.energy)}
     </div>
     ${hasOura?`<div class="oura-fetch-row" id="ouraFetchRow"><span class="oura-ring-icon">◎</span><span id="ouraFetchStatus" style="color:var(--mu);font-size:12px">Fetching Oura readiness…</span></div>`:''}
     <div class="pip-hint" id="pipHint"></div>
@@ -1587,6 +1589,37 @@ function renderWeekPlanner(){
 function wpNav(dir){wpWeekOffset+=dir;renderWeekPlanner();}
 function wpRemove(dkey){delete ST.sched[dkey];saveST();renderWeekPlanner();showToast('Removed');}
 
+function homeScheduleSheet(wkey){
+  const today=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const defaultDate=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  const h=`<div class="setup-overlay" id="homeSchedOverlay" onclick="if(event.target===this)closeHomeSched()"><div class="setup-sheet" id="homeSchedSheet">
+    <div class="setup-drag-handle"></div>
+    <div class="setup-title">Schedule Workout 📅</div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:4px">
+      <div>
+        <div style="font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Date</div>
+        <input type="date" id="homeSchedDate" value="${defaultDate}" style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-size:16px;padding:10px 14px;width:100%;outline:none;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Time (optional)</div>
+        <input type="time" id="homeSchedTime" value="07:00" style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-size:16px;padding:10px 14px;width:100%;outline:none;font-family:'Plus Jakarta Sans',sans-serif;box-sizing:border-box">
+      </div>
+    </div>
+    <button onclick="confirmHomeSched('${wkey}')" style="width:100%;margin-top:12px;padding:15px;border-radius:12px;border:none;background:var(--ac);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer">Add to Schedule</button>
+    <button onclick="closeHomeSched()" style="width:100%;margin-top:8px;padding:11px;border-radius:11px;border:1px solid var(--bd);background:none;color:var(--mu);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer">Cancel</button>
+  </div></div>`;
+  document.body.insertAdjacentHTML('beforeend',h);
+  requestAnimationFrame(()=>document.getElementById('homeSchedSheet').classList.add('in'));
+}
+function confirmHomeSched(wkey){
+  const d=document.getElementById('homeSchedDate');
+  const t=document.getElementById('homeSchedTime');
+  if(!d||!d.value)return;
+  ST.sched[d.value]={wkey,time:t?t.value:''};
+  saveST();closeHomeSched();showToast('Scheduled 📅');
+}
+function closeHomeSched(){const o=document.getElementById('homeSchedOverlay');if(!o)return;o.classList.add('out');setTimeout(()=>o.remove(),250);}
 function wpAddSheet(dkey){
   const d=new Date(dkey+'T12:00:00');
   const label=`${DOW_SHORT[d.getDay()]} ${MNAMES[d.getMonth()]} ${d.getDate()}`;
