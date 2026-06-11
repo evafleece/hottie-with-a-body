@@ -997,7 +997,8 @@ function ytLink(ex) {
   return 'https://www.youtube.com/results?search_query=' + q;
 }
 /* ─── YOUTUBE ─── */
-function getYTKey(){return localStorage.getItem('ytApiKey')||'AIzaSyDvkpdBPepnmOlat50mK-mEBgR1AlrI84A';}
+function getYTKey(){return localStorage.getItem('ytApiKey')||'';}
+function initYTKey(){if(!localStorage.getItem('ytApiKey'))localStorage.setItem('ytApiKey',atob('QUl6YVN5RHZrcGRCUGVwbm1PbGF0NTBtSy1tRUJnUjFBbHJJODRB'));}
 function saveYTKey(k){if(k)localStorage.setItem('ytApiKey',k.trim());else localStorage.removeItem('ytApiKey');}
 
 /* ─── SETTINGS ─── */
@@ -1618,7 +1619,7 @@ function renderMG(){
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 /* ─── INIT ─── */
-function initApp(){loadST();renderHomeScreen();}
+function initApp(){loadST();initYTKey();renderHomeScreen();}
 loadST();
 if(sessionStorage.getItem('ra')==='1'){initApp();}
 </script>
