@@ -1100,15 +1100,9 @@ function showYT(ex){
       <div style="text-align:center;color:var(--mu);padding:30px 20px">
         <div style="font-size:44px;margin-bottom:10px">▶</div>
         <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px">${name}</div>
-        ${key?`<div style="font-size:11px;color:var(--ac3)">Loading…</div>`:`<div style="font-size:11px;color:var(--mu)">Add a YouTube API key to enable inline video</div>`}
+        ${key?`<div style="font-size:11px;color:var(--ac3)">Loading…</div>`:`<div style="font-size:11px;color:var(--mu)">Tap below to watch on YouTube</div>`}
       </div>
     </div></div>
-    ${key?'':`<div style="background:rgba(232,255,90,.05);border:1px solid rgba(232,255,90,.15);border-radius:10px;padding:10px 12px;margin-bottom:10px">
-      <div style="font-size:11px;font-weight:700;color:var(--ac);margin-bottom:3px">Enable inline video</div>
-      <div style="font-size:11px;color:#bbb;margin-bottom:7px">YouTube embeds need a free API key (takes 2 min to set up via Google Cloud Console).</div>
-      <input id="ytKeyInput" class="swap-input" placeholder="Paste YouTube Data API v3 key here…" style="margin-bottom:6px">
-      <button onclick="saveYTKeyAndReload('${name.replace(/'/g,"\\'")}')" style="background:var(--ac);color:#111;border:none;border-radius:8px;padding:8px 14px;font-family:'Syne',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;width:100%">Save &amp; load video</button>
-    </div>`}
     <a class="yt-open-btn" href="${searchUrl}" target="_blank" rel="noopener" onclick="closeYT()">▶ Open on YouTube</a>
     <div class="yt-search-note">Searches "Theory of Movement ${name}" on YouTube</div>
     <button class="setup-rebtn" onclick="closeYT()" style="margin-top:8px">Close</button>
