@@ -25,6 +25,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .htx{flex:1}
 .ht{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:2px;color:var(--ac);line-height:1}
 .hs{font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.hdr-settings-btn{background:none;border:none;color:var(--mu);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;transition:color .15s}
+.hdr-settings-btn:hover{color:var(--tx)}
+.settings-section{margin-bottom:20px}
+.settings-section-title{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
+.settings-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.settings-label{font-size:12px;color:var(--tx);font-weight:600}
+.settings-sub{font-size:11px;color:var(--mu);line-height:1.5}
+.settings-inp{background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .15s}
+.settings-inp:focus{border-color:var(--ac)}
+.settings-save-btn{width:100%;padding:12px;border-radius:11px;border:none;background:var(--ac);color:#111;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:4px}
+.settings-oura-status{font-size:11px;padding:8px 12px;border-radius:8px;margin-top:6px;display:none}
+.settings-oura-status.ok{background:rgba(65,234,212,.1);color:var(--ac4);display:block}
+.settings-oura-status.err{background:rgba(255,133,82,.1);color:var(--ac2);display:block}
+.oura-fetch-row{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(65,234,212,.06);border:1px solid rgba(65,234,212,.15);border-radius:10px;margin-bottom:10px}
+.oura-ring-icon{color:var(--ac4);font-size:14px;flex-shrink:0}
 .nav{display:flex;background:var(--sf);border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
 .nt{flex:0 0 auto;padding:9px 13px;text-align:center;font-size:11px;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
@@ -431,12 +446,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   <div class="hdr">
     <div class="hbk" id="backBtn" onclick="goBack()">←</div>
     <div class="htx"><div class="ht" id="hTitle">RISE</div><div class="hs" id="hSub">Personal Trainer</div></div>
+    <button class="hdr-settings-btn" onclick="showSettings()" id="settingsBtn">⚙</button>
   </div>
   <div class="nav" id="navTabs">
     <div class="nt active" onclick="switchTab('browse')">Workouts</div>
     <div class="nt" onclick="switchTab('progress')">Progress</div>
     <div class="nt" onclick="switchTab('calendar')">Schedule</div>
-    <div class="nt" onclick="switchTab('cardio')">Cardio</div>
     <div class="nt" onclick="switchTab('muscles')">Muscles</div>
   </div>
   <div class="view active" id="browseView">
@@ -457,7 +472,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     <div id="schedPanel"></div>
     <div id="upcomingSection"></div>
   </div>
-  <div class="view" id="cardioView"><div class="csec" id="cardioContent"></div></div>
   <div class="view" id="musclesView"><div class="mgw" id="muscleGuide"></div></div>
 </div>
 
@@ -706,18 +720,6 @@ function renderHomeScreen(){
       <div class="home-score-sub">${totalVol>0?'total kg lifted':completedCount+' / '+WS.length+' workouts'}</div>
     </div>
   </div>`;
-  // How are you feeling pip strip
-  const homePipRow=(field,icon,label,val,colors)=>{
-    const btns=[1,2,3,4,5].map(n=>`<button class="hpip${val===n?' hpip-on':''}" onclick="setHomePip('${field}',${n})">${n}</button>`).join('');
-    return`<div class="hpip-row"><span class="hpip-icon">${icon}</span><span class="hpip-label">${label}</span><div class="hpip-btns">${btns}</div></div>`;
-  };
-  h+=`<div class="home-feel-card">
-    <div class="home-feel-title">How are you feeling?</div>
-    ${homePipRow('time','⏱','Time',hs.time)}
-    ${homePipRow('busy','🏋️','Gym',hs.busy)}
-    ${homePipRow('energy','⚡','Energy',hs.energy)}
-  </div>`;
-
   if(next){
     const ms=wMuscles(next).slice(0,5);
     const secCount=next.sections.length;
@@ -799,6 +801,7 @@ function showSessionSetup(w){
     const btns=[1,2,3,4,5].map(n=>`<button class="pip-btn${val===n?' pip-on':''}" onclick="setPip('${k}','${id}',${n},this)">${n}</button>`).join('');
     return`<div class="pip-row"><div class="pip-meta"><span class="pip-icon">${icon}</span><div><div class="pip-label">${lbl}</div><div class="pip-sub">${sub}</div></div></div><div class="pip-btns" id="pip-${id}">${btns}</div></div>`;
   };
+  const hasOura=!!(getOuraToken()&&getOuraProxy());
   const h=`<div class="setup-overlay" id="sessionOverlay" onclick="if(event.target===this)startSession('${k}')">
   <div class="setup-sheet" id="sessionSheet">
     <div class="setup-drag-handle"></div>
@@ -809,11 +812,30 @@ function showSessionSetup(w){
       ${pip('busy','🏋️','Gym busyness','1=empty · 3=moderate · 5=packed',ex.busy)}
       ${pip('energy','⚡','Energy level','1=low · 3=normal · 5=crushing it',ex.energy)}
     </div>
+    ${hasOura?`<div class="oura-fetch-row" id="ouraFetchRow"><span class="oura-ring-icon">◎</span><span id="ouraFetchStatus" style="color:var(--mu);font-size:12px">Fetching Oura readiness…</span></div>`:''}
     <div class="pip-hint" id="pipHint"></div>
     <button class="setup-go" onclick="startSession('${k}')">Let's go 💪</button>
   </div></div>`;
   document.body.insertAdjacentHTML('beforeend',h);
-  requestAnimationFrame(()=>{document.getElementById('sessionSheet').classList.add('in');updatePipHint(k);});
+  requestAnimationFrame(()=>{
+    document.getElementById('sessionSheet').classList.add('in');
+    updatePipHint(k);
+    if(getOuraToken()&&getOuraProxy()){
+      fetchOuraReadiness().then(score=>{
+        const el=document.getElementById('ouraFetchStatus');
+        if(!el)return;
+        if(score===null){el.textContent='Oura unavailable — set energy manually';return;}
+        const pip=ouraScoreToEnergyPip(score);
+        if(!ST.session[k])ST.session[k]={time:3,busy:2,energy:3};
+        ST.session[k].energy=pip;saveST();
+        // update pip buttons visually
+        document.querySelectorAll('#pip-energy .pip-btn').forEach((b,i)=>b.classList.toggle('pip-on',i+1===pip));
+        updatePipHint(k);
+        el.style.color='var(--ac4)';
+        el.textContent=`◎ Oura readiness ${score} → energy set to ${pip}`;
+      });
+    }
+  });
 }
 function setPip(wkey,field,val,btn){
   if(!ST.session[wkey])ST.session[wkey]={time:3,busy:2,energy:3};
@@ -977,6 +999,92 @@ function ytLink(ex) {
 /* ─── YOUTUBE ─── */
 function getYTKey(){return localStorage.getItem('ytApiKey')||'';}
 function saveYTKey(k){if(k)localStorage.setItem('ytApiKey',k.trim());else localStorage.removeItem('ytApiKey');}
+
+/* ─── SETTINGS ─── */
+function getOuraToken(){return localStorage.getItem('ouraToken')||'';}
+function getOuraProxy(){return localStorage.getItem('ouraProxy')||'';}
+
+function showSettings(){
+  const h=`<div class="setup-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+  <div class="setup-sheet" id="settingsSheet">
+    <div class="setup-drag-handle"></div>
+    <div class="setup-title" style="margin-bottom:18px">Settings</div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Oura Ring</div>
+      <div class="settings-row">
+        <div class="settings-label">Personal Access Token</div>
+        <div class="settings-sub">Get yours at cloud.ouraring.com/personal-access-tokens</div>
+        <input class="settings-inp" id="ouraTokenInp" type="password" placeholder="Paste token here" value="${getOuraToken()}">
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">Proxy Worker URL</div>
+        <div class="settings-sub">Your Cloudflare Worker URL (see oura-proxy-worker.js in the project folder)</div>
+        <input class="settings-inp" id="ouraProxyInp" type="url" placeholder="https://oura-proxy.yourname.workers.dev" value="${getOuraProxy()}">
+      </div>
+      <button class="settings-save-btn" style="background:var(--ac4);color:#111" onclick="saveOuraSettings()">Save &amp; Test Connection</button>
+      <div class="settings-oura-status" id="ouraStatus"></div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">YouTube Demo Videos</div>
+      <div class="settings-row">
+        <div class="settings-label">YouTube Data API v3 Key</div>
+        <div class="settings-sub">Get yours at console.cloud.google.com — enable YouTube Data API v3</div>
+        <input class="settings-inp" id="ytKeyInp" type="password" placeholder="Paste API key here" value="${getYTKey()}">
+      </div>
+      <button class="settings-save-btn" onclick="saveYTKeyFromSettings()">Save YouTube Key</button>
+    </div>
+
+    <button onclick="closeSettings()" style="width:100%;padding:11px;border-radius:11px;border:1px solid var(--bd);background:none;color:var(--mu);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;margin-top:4px">Close</button>
+  </div></div>`;
+  document.body.insertAdjacentHTML('beforeend',h);
+  requestAnimationFrame(()=>document.getElementById('settingsSheet').classList.add('in'));
+}
+function closeSettings(){
+  const o=document.getElementById('settingsOverlay');
+  if(!o)return;
+  o.classList.add('out');
+  setTimeout(()=>o.remove(),250);
+}
+function saveYTKeyFromSettings(){
+  saveYTKey(document.getElementById('ytKeyInp').value);
+  showToast('YouTube key saved ✓');
+}
+async function saveOuraSettings(){
+  const token=document.getElementById('ouraTokenInp').value.trim();
+  const proxy=document.getElementById('ouraProxyInp').value.trim();
+  if(token)localStorage.setItem('ouraToken',token);else localStorage.removeItem('ouraToken');
+  if(proxy)localStorage.setItem('ouraProxy',proxy.replace(/\/$/,''));else localStorage.removeItem('ouraProxy');
+  const status=document.getElementById('ouraStatus');
+  status.textContent='Testing connection…';status.className='settings-oura-status ok';
+  const result=await fetchOuraReadiness();
+  if(result===null){status.textContent='❌ Connection failed — check token and proxy URL';status.className='settings-oura-status err';}
+  else{status.textContent=`✓ Connected — today's readiness: ${result}`;status.className='settings-oura-status ok';showToast('Oura connected ✓');}
+}
+
+/* ─── OURA ─── */
+async function fetchOuraReadiness(){
+  const token=getOuraToken(),proxy=getOuraProxy();
+  if(!token||!proxy)return null;
+  try{
+    const today=new Date().toISOString().split('T')[0];
+    const res=await fetch(`${proxy}/daily_readiness?start_date=${today}&end_date=${today}`,{
+      headers:{Authorization:`Bearer ${token}`}
+    });
+    if(!res.ok)return null;
+    const data=await res.json();
+    const score=data?.data?.[0]?.score;
+    return score??null;
+  }catch(e){return null;}
+}
+function ouraScoreToEnergyPip(score){
+  if(score>=85)return 5;
+  if(score>=75)return 4;
+  if(score>=65)return 3;
+  if(score>=50)return 2;
+  return 1;
+}
 
 function showYT(ex){
   const name=ex.split(' OR ')[0].split('/')[0].replace(/^[A-E]\d?\) */,'').trim();
