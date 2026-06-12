@@ -154,27 +154,27 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .ca-text{font-size:12px;color:var(--tx);font-weight:500}
 .ca-sub{font-size:10px;color:var(--mu);margin-top:1px}
 /* CALENDAR */
-.wp-wrap{padding:16px 14px 80px;display:flex;flex-direction:column;gap:14px}
-.wp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
-.wp-nav-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx)}
-.wp-nav-btn{background:var(--sf);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:5px 13px;cursor:pointer;font-size:15px}
-.wp-days{display:flex;flex-direction:column;gap:8px}
-.wp-day{background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:border-color .15s}
+.wp-wrap{padding:16px 16px 80px;display:flex;flex-direction:column;gap:12px;width:100%;box-sizing:border-box;max-width:480px;margin:0 auto}
+.wp-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wp-nav-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx);text-align:center;flex:1}
+.wp-nav-btn{background:var(--sf);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:6px 16px;cursor:pointer;font-size:18px;line-height:1;flex-shrink:0}
+.wp-days{display:flex;flex-direction:column;gap:8px;width:100%}
+.wp-day{background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:border-color .15s;width:100%;box-sizing:border-box}
 .wp-day.wp-today{border-color:rgba(215,247,91,.3)}
-.wp-day-head{display:flex;align-items:center;padding:11px 14px;gap:10px;cursor:pointer}
-.wp-day-date{display:flex;flex-direction:column;align-items:center;min-width:34px}
-.wp-day-dow{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px}
+.wp-day-head{display:flex;align-items:center;padding:12px 14px;gap:12px}
+.wp-day-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:36px;flex-shrink:0}
+.wp-day-dow{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;line-height:1;margin-bottom:2px}
 .wp-day-num{font-size:20px;font-weight:800;font-family:'Syne',sans-serif;color:var(--tx);line-height:1}
 .wp-today .wp-day-dow,.wp-today .wp-day-num{color:var(--ac)}
-.wp-day-content{flex:1;min-width:0}
+.wp-day-content{flex:1;min-width:0;overflow:hidden}
 .wp-day-empty{font-size:12px;color:var(--mu)}
 .wp-day-workout{display:flex;flex-direction:column;gap:2px}
-.wp-day-wname{font-size:13px;font-weight:700;color:var(--tx)}
-.wp-day-wmeta{font-size:11px;color:var(--mu)}
-.wp-day-time{font-size:12px;color:var(--ac4);font-weight:600}
-.wp-day-add{background:none;border:1px dashed var(--bd);border-radius:8px;color:var(--mu);font-size:12px;padding:4px 10px;cursor:pointer;flex-shrink:0}
-.wp-day-remove{background:none;border:none;color:var(--mu);font-size:16px;cursor:pointer;padding:0 4px;flex-shrink:0}
-.wp-export{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 16px}
+.wp-day-wname{font-size:13px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wp-day-wmeta{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wp-day-time{font-size:11px;color:var(--ac4);font-weight:600}
+.wp-day-add{background:none;border:1.5px dashed var(--bd);border-radius:8px;color:var(--mu);font-size:12px;padding:5px 12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.wp-day-remove{background:none;border:none;color:var(--mu);font-size:20px;cursor:pointer;padding:0 2px 0 6px;flex-shrink:0;line-height:1}
+.wp-export{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;width:100%;box-sizing:border-box}
 .wp-export-title{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
 .wp-export-btns{display:flex;gap:8px}
 .wp-export-btn{flex:1;padding:11px;border-radius:11px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
